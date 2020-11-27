@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Commander.Models;
 using System;
 using System.Collections.Generic;
+using MVCPractice.Test.Commander;
 
 namespace MVCPractice.Test
 {       
@@ -39,5 +40,42 @@ namespace MVCPractice.Test
 
             Assert.Equal(commands.Count, 6 );
         }
+
+        //GET api/commands/{id}
+        [Theory]
+        [MemberData(nameof(Data))]
+        public async Task MultipleCommands(int id, Command expected)
+        {   
+            var response = await _client.GetAsync($"api/commands/{id}");
+            Command responseCommand = JsonConvert.DeserializeObject<Command>(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(expected.Id, responseCommand.Id);
+            Assert.Equal(expected.HowTo, responseCommand.HowTo);
+            Assert.Equal(expected.Line, responseCommand.Line);
+            Assert.Equal(expected.Platform, responseCommand.Platform);
+        }
+
+        public static IEnumerable<object[]> Data =>
+            new List<object[]>
+            {
+                new object[] {4, new Command(){
+                    Id = 4,
+                    HowTo = "Run a .NET Core app",
+                    Line = "dotnet run",
+                    Platform = null
+                }},
+                new object[] {2, new Command(){
+                    Id = 2,
+                    HowTo = "How to run migrations",
+                    Line = "dotnet database update",
+                    Platform = null
+                }},
+                new object[] {3, new Command(){
+                    Id = 3,
+                    HowTo = "Run a .NET Core app",
+                    Line = "dotnet run",
+                    Platform = null
+                }}
+            };
     }
 }
